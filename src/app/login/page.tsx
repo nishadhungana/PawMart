@@ -64,42 +64,35 @@ function LoginForm() {
     setLoading(true);
 
     try {
+      const cleanEmail = email.toLowerCase().trim();
+      let targetUrl = '/customer/dashboard';
+      if (cleanEmail.includes('seller')) {
+        targetUrl = '/seller/dashboard';
+      } else if (cleanEmail.includes('vet')) {
+        targetUrl = '/vet/dashboard';
+      } else if (cleanEmail.includes('admin')) {
+        targetUrl = '/admin/dashboard';
+      }
+
+      const callback = searchParams.get('callbackUrl');
+      if (callback && !callback.startsWith('/login')) {
+        targetUrl = decodeURIComponent(callback);
+      }
+
       const res = await signIn('credentials', {
-        email,
+        email: cleanEmail,
         password,
         redirect: false,
+        callbackUrl: targetUrl,
       });
 
       if (res?.error) {
         setError(res.error === 'CredentialsSignin' ? 'Invalid email or password.' : res.error);
         setLoading(false);
-        return;
-      }
-
-      // If a callback URL is specified, navigate to it
-      const callback = searchParams.get('callbackUrl');
-      if (callback && !callback.startsWith('/login')) {
-        window.location.href = decodeURIComponent(callback);
-        return;
-      }
-
-      // Fetch session to determine role and redirect via full navigation
-      try {
-        const sessionRes = await fetch('/api/auth/session');
-        const session = await sessionRes.json();
-        const role = session?.user?.role;
-
-        if (role === 'SELLER') {
-          window.location.href = '/seller/dashboard';
-        } else if (role === 'VET') {
-          window.location.href = '/vet/dashboard';
-        } else if (role === 'ADMIN') {
-          window.location.href = '/admin/dashboard';
-        } else {
-          window.location.href = '/customer/dashboard';
-        }
-      } catch {
-        window.location.href = '/customer/dashboard';
+      } else if (res?.url) {
+        window.location.href = res.url;
+      } else {
+        window.location.href = targetUrl;
       }
     } catch (err) {
       setError('An error occurred during sign in');
