@@ -9,7 +9,7 @@ export async function middleware(req: NextRequest) {
 
   const token = await getToken({
     req,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || 'pawmart_nepal_secret_key_2026_super_secure_auth',
   });
   const { pathname } = req.nextUrl;
 
