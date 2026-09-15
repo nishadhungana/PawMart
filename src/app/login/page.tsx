@@ -15,10 +15,17 @@ function LoginForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // If user is already authenticated, redirect to appropriate dashboard immediately
+  // If user is already authenticated, redirect to appropriate dashboard unless switching role
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
       const role = session.user.role;
+      const roleParam = searchParams.get('role');
+
+      // If user is intentionally switching to a different demo role, don't auto-redirect
+      if (roleParam && roleParam.toUpperCase() !== role) {
+        return;
+      }
+
       const callback = searchParams.get('callbackUrl');
       if (callback && !callback.startsWith('/login')) {
         window.location.href = decodeURIComponent(callback);
@@ -106,7 +113,10 @@ function LoginForm() {
     setError('');
   };
 
-  if (status === 'authenticated' && session?.user) {
+  const roleParam = searchParams.get('role');
+  const isSwitchingRole = Boolean(roleParam && session?.user && roleParam.toUpperCase() !== session.user.role);
+
+  if (status === 'authenticated' && session?.user && !isSwitchingRole) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full text-center space-y-4 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
