@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Lock, Mail, Store, Stethoscope, User, ShieldAlert } from 'lucide-react';
@@ -9,10 +9,30 @@ import { Lock, Mail, Store, Stethoscope, User, ShieldAlert } from 'lucide-react'
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // If user is already authenticated, redirect to appropriate dashboard immediately
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      const role = session.user.role;
+      const callback = searchParams.get('callbackUrl');
+      if (callback && !callback.startsWith('/login')) {
+        window.location.href = decodeURIComponent(callback);
+      } else if (role === 'SELLER') {
+        window.location.href = '/seller/dashboard';
+      } else if (role === 'VET') {
+        window.location.href = '/vet/dashboard';
+      } else if (role === 'ADMIN') {
+        window.location.href = '/admin/dashboard';
+      } else {
+        window.location.href = '/customer/dashboard';
+      }
+    }
+  }, [session, status, searchParams]);
 
   useEffect(() => {
     const roleParam = searchParams.get('role');
@@ -85,6 +105,18 @@ function LoginForm() {
     setPassword('password123');
     setError('');
   };
+
+  if (status === 'authenticated' && session?.user) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full text-center space-y-4 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+          <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <h2 className="text-xl font-bold text-gray-900">Signed in as {session.user.name}</h2>
+          <p className="text-xs text-gray-500">Redirecting to your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
