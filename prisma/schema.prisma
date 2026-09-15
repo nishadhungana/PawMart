@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("CUSTOMER") // CUSTOMER | SELLER | VET | ADMIN
+  phone        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customerProfile          CustomerProfile?
+  sellerProfile            SellerProfile?
+  vetProfile               VetProfile?
+
+  cartItems                CartItem[]
+  wishlistItems            WishlistItem[]
+  orders                   Order[]
+  reviews                  Review[]
+  appointments             Appointment[]
+  patientRecords           PatientRecord[]
+  moderationLogs           ModerationLog[]
+  notifications            Notification[]
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // ORDER_PLACED | ORDER_CONFIRMED | ORDER_SHIPPED | ORDER_DELIVERED | ORDER_CANCELLED
+  title     String
+  message   String
+  orderId   String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model CustomerProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  addresses String   @default("[]") // JSON string of address objects
+  pets      String   @default("[]") // JSON string of pet objects
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SellerProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopName    String
+  description String?
+  city        String   @default("Kathmandu")
+  address     String   @default("New Road, Kathmandu")
+  verified    Boolean  @default(true)
+  rating      Float    @default(4.8)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products   Product[]
+  orderItems OrderItem[]
+}
+
+model VetProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinicName      String
+  city            String   @default("Kathmandu")
+  address         String   @default("Lazimpat, Kathmandu")
+  phone           String   @default("+977-9801234567")
+  servicesOffered String   @default("[\"General Checkup\", \"Vaccination\", \"Surgery\", \"Emergency\"]")
+  openingHours    String   @default("Sun-Fri: 9:00 AM - 6:00 PM")
+  verified        Boolean  @default(true)
+  rating          Float    @default(4.9)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  appointments   Appointment[]
+  patientRecords PatientRecord[]
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  products Product[]
+}
+
+model Product {
+  id                String        @id @default(cuid())
+  sellerId          String
+  seller            SellerProfile @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  categoryId        String
+  category          Category      @relation(fields: [categoryId], references: [id])
+  name              String
+  brand             String?
+  description       String
+  price             Float
+  stock             Int
+  lowStockThreshold Int           @default(5)
+  images            String        @default("[]") // JSON array of image URLs
+  vetRecommended    Boolean       @default(false)
+  status            String        @default("PUBLISHED") // DRAFT | PUBLISHED
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  cartItems     CartItem[]
+  wishlistItems WishlistItem[]
+  orderItems    OrderItem[]
+  reviews       Review[]
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  customerId      String
+  customer        User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  total           Float
+  status          String      @default("PENDING") // PENDING | CONFIRMED | SHIPPED | DELIVERED | CANCELLED
+  paymentMethod   String      @default("COD") // ESEWA | KHALTI | COD | CREDIT_CARD
+  paymentStatus   String      @default("PAID")
+  shippingAddress String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Transaction Security Fields (College Security Demonstration)
+  transactionHash  String?
+  digitalSignature String?
+  signedAt         DateTime?
+
+  items            OrderItem[]
+}
+
+model OrderItem {
+  id              String        @id @default(cuid())
+  orderId         String
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id])
+  sellerId        String
+  seller          SellerProfile @relation(fields: [sellerId], references: [id])
+  qty             Int
+  priceAtPurchase Float
+}
+
+model Review {
+  id               String   @id @default(cuid())
+  productId        String
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customerId       String
+  customer         User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  rating           Int
+  comment          String
+  verifiedPurchase Boolean  @default(true)
+  createdAt        DateTime @default(now())
+}
+
+model Appointment {
+  id            String            @id @default(cuid())
+  customerId    String
+  customer      User              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  vetId         String
+  vet           VetProfile        @relation(fields: [vetId], references: [id], onDelete: Cascade)
+  petName       String
+  petType       String
+  type          String            @default("CLINIC_VISIT") // CLINIC_VISIT | HOME_VISIT
+  requestedDate String
+  requestedTime String
+  address       String?
+  status        String            @default("PENDING") // PENDING | CONFIRMED | REJECTED | COMPLETED | CANCELLED
+  isUrgent      Boolean           @default(false)
+  feeEstimate   Float?
+  notes         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model PatientRecord {
+  id            String     @id @default(cuid())
+  petName       String
+  customerId    String
+  customer      User       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  vetId         String
+  vet           VetProfile @relation(fields: [vetId], references: [id], onDelete: Cascade)
+  visitDate     DateTime   @default(now())
+  diagnosis     String
+  prescription  String
+  followUpNotes String?
+  createdAt     DateTime   @default(now())
+}
+
+model ModerationLog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String
+  reason      String
+  actionTaken String
+  status      String   @default("RESOLVED")
+  createdAt   DateTime @default(now())
+}
+
