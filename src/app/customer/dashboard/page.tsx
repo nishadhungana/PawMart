@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { formatNPR, formatDate } from '@/lib/utils';
-import { ShoppingBag, Calendar, Heart, User, MapPin, Printer, Star, Plus, CheckCircle, Clock } from 'lucide-react';
+import { ShoppingBag, Calendar, Heart, User, MapPin, Printer, Star, Plus, CheckCircle, Clock, KeyRound, Lock, AlertCircle, ShieldCheck } from 'lucide-react';
 
 function CustomerDashboardContent() {
   const { data: session, status } = useSession();
@@ -27,6 +27,53 @@ function CustomerDashboardContent() {
   // Add Pet Modal State
   const [showPetModal, setShowPetModal] = useState(false);
   const [newPet, setNewPet] = useState({ name: '', species: 'Dog', breed: '', age: '', notes: '' });
+
+  // Change Password Form State
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [pwLoading, setPwLoading] = useState(false);
+  const [pwError, setPwError] = useState('');
+  const [pwSuccess, setPwSuccess] = useState('');
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwError('');
+    setPwSuccess('');
+
+    if (newPassword.length < 6) {
+      setPwError('New password must be at least 6 characters long.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPwError('New passwords do not match. Please re-enter.');
+      return;
+    }
+
+    setPwLoading(true);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setPwError(data.error || 'Failed to update password.');
+      } else {
+        setPwSuccess('Your password has been changed successfully!');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      }
+    } catch {
+      setPwError('An error occurred while updating password.');
+    } finally {
+      setPwLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -140,6 +187,17 @@ function CustomerDashboardContent() {
           }`}
         >
           <Heart className="w-4 h-4" /> My Pets ({pets.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('security')}
+          className={`pb-3 px-4 flex items-center gap-2 transition border-b-2 whitespace-nowrap ${
+            activeTab === 'security'
+              ? 'border-emerald-600 text-emerald-700 font-bold'
+              : 'border-transparent text-gray-500 hover:text-gray-900'
+          }`}
+        >
+          <KeyRound className="w-4 h-4" /> Account Security &amp; Password
         </button>
       </div>
 
@@ -310,6 +368,108 @@ function CustomerDashboardContent() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Tab 4: Account Security & Password */}
+      {activeTab === 'security' && (
+        <div className="max-w-2xl bg-white p-6 sm:p-8 rounded-3xl border border-gray-200 shadow-sm space-y-6">
+          <div className="border-b border-gray-100 pb-4">
+            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-emerald-600" /> Change Your Password
+            </h2>
+            <p className="text-xs text-gray-500 mt-1">
+              Update your PawMart Nepal account password to keep your account secure.
+            </p>
+          </div>
+
+          {pwError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 p-3.5 rounded-xl text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold">Error</p>
+                <p>{pwError}</p>
+              </div>
+            </div>
+          )}
+
+          {pwSuccess && (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 p-3.5 rounded-xl text-xs flex items-start gap-2.5">
+              <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold">Success</p>
+                <p>{pwSuccess}</p>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleChangePassword} className="space-y-4 text-xs">
+            <div>
+              <label className="block font-bold text-gray-700 mb-1">Current Password</label>
+              <div className="relative">
+                <Lock className="w-4 h-4 absolute left-3.5 top-3.5 text-gray-400" />
+                <input
+                  type="password"
+                  required
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 text-xs bg-white"
+                  placeholder="Enter your current password"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">New Password</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 absolute left-3.5 top-3.5 text-gray-400" />
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 text-xs bg-white"
+                    placeholder="Min 6 characters"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Confirm New Password</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 absolute left-3.5 top-3.5 text-gray-400" />
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 text-xs bg-white"
+                    placeholder="Re-type new password"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={pwLoading}
+              className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold rounded-xl shadow transition flex items-center gap-2 text-xs"
+            >
+              {pwLoading ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  Updating Password...
+                </>
+              ) : (
+                <>
+                  <KeyRound className="w-4 h-4" /> Save New Password
+                </>
+              )}
+            </button>
+          </form>
         </div>
       )}
 
