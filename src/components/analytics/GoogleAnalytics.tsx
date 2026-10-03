@@ -14,12 +14,16 @@ function GoogleAnalyticsRouterTracker() {
   const isInitialMount = useRef(true);
 
   useEffect(() => {
-    // Construct full relative URL
     const queryString = searchParams?.toString();
     const url = queryString ? `${pathname}?${queryString}` : pathname;
 
-    trackGaPageView(url);
-    isInitialMount.current = false;
+    // The base gtag('config', gaId) already fires the initial page_view on load.
+    // The router tracker fires on subsequent client navigation.
+    if (!isInitialMount.current) {
+      trackGaPageView(url);
+    } else {
+      isInitialMount.current = false;
+    }
   }, [pathname, searchParams]);
 
   return null;
@@ -53,10 +57,7 @@ export default function GoogleAnalytics() {
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${gaId}', {
-                  page_path: window.location.pathname,
-                  send_page_view: false
-                });
+                gtag('config', '${gaId}');
               `,
             }}
           />
