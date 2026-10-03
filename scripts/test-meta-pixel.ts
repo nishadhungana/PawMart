@@ -1,3 +1,5 @@
+export {};
+
 /**
  * Meta Pixel Unit & Integration Test Suite
  * Tests all tracking events, deduplication, consent handling, and safety guards.

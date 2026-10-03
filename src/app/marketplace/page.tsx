@@ -1,7 +1,9 @@
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { Search, Filter, Stethoscope, Check } from 'lucide-react';
 import TrackableProductCard from '@/components/product/TrackableProductCard';
+import SearchTracker from '@/components/analytics/SearchTracker';
 
 export const revalidate = 0;
 
@@ -10,6 +12,50 @@ interface SearchParams {
   search?: string;
   vetRecommended?: string;
   maxPrice?: string;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const { category, search, vetRecommended } = searchParams;
+
+  let title = 'Pet Supplies & Products in Nepal';
+  let description =
+    'Browse authentic dog food, cat treats, bird supplies, grooming kits & vet-approved health care from verified Nepali shop sellers.';
+
+  if (category) {
+    const cat = await prisma.category.findUnique({ where: { slug: category } });
+    if (cat) {
+      title = `${cat.name} Products in Nepal`;
+      description = `Shop authentic ${cat.name.toLowerCase()} supplies in Nepal. Fast delivery in Kathmandu, Lalitpur, and Pokhara.`;
+    }
+  } else if (search) {
+    title = `"${search}" - Search Pet Supplies in Nepal`;
+    description = `Search results for "${search}" on PawMart Nepal. Find authentic pet supplies, food, and accessories with home delivery.`;
+  } else if (vetRecommended === 'true') {
+    title = 'Vet-Recommended Pet Foods & Supplies in Nepal';
+    description =
+      'Shop doctor-approved prescription pet food, anti-tick shampoos, supplements, and care products verified by licensed veterinarians in Nepal.';
+  }
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} | PawMart Nepal`,
+      description,
+      type: 'website',
+      images: ['/hero.jpeg'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} | PawMart Nepal`,
+      description,
+      images: ['/hero.jpeg'],
+    },
+  };
 }
 
 export default async function MarketplacePage({
@@ -51,6 +97,7 @@ export default async function MarketplacePage({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <SearchTracker search={search} />
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-emerald-800 to-teal-800 text-white p-8 rounded-3xl shadow-md">
         <h1 className="text-3xl font-extrabold tracking-tight">Pet Supplies Marketplace</h1>

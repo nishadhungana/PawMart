@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { trackAddToCart } from '@/lib/meta-pixel';
+import { trackGaAddToCart, trackGaRemoveFromCart } from '@/lib/gtag';
 
 export interface CartItemType {
   id: string; // product id
@@ -74,9 +75,30 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       currency: 'NPR',
       num_items: qty,
     });
+
+    // Track Google Analytics 4 (GA4) add_to_cart event
+    trackGaAddToCart(
+      {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
+      qty
+    );
   };
 
   const removeFromCart = (productId: string) => {
+    const itemToRemove = cart.find((i) => i.id === productId);
+    if (itemToRemove) {
+      // Track Google Analytics 4 (GA4) remove_from_cart event
+      trackGaRemoveFromCart({
+        id: itemToRemove.id,
+        name: itemToRemove.name,
+        price: itemToRemove.price,
+        quantity: itemToRemove.quantity,
+      });
+    }
+
     setCart((prev) => prev.filter((i) => i.id !== productId));
   };
 

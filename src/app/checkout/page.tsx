@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import { formatNPR } from '@/lib/utils';
 import { ShieldCheck, CheckCircle, CreditCard, MapPin, Truck, AlertCircle, Lock } from 'lucide-react';
 import { trackInitiateCheckout, trackPurchase } from '@/lib/meta-pixel';
+import { trackGaBeginCheckout, trackGaPurchase } from '@/lib/gtag';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function CheckoutPage() {
   const grandTotal = cartTotal + deliveryFee;
   const initiateCheckoutTracked = useRef(false);
 
-  // Track Meta Pixel InitiateCheckout event once per checkout session
+  // Track Meta Pixel InitiateCheckout & GA4 begin_checkout once per checkout session
   useEffect(() => {
     if (cart.length > 0 && !initiateCheckoutTracked.current) {
       initiateCheckoutTracked.current = true;
@@ -45,6 +46,16 @@ export default function CheckoutPage() {
         value: grandTotal,
         currency: 'NPR',
       });
+
+      trackGaBeginCheckout(
+        cart.map((i) => ({
+          id: i.id,
+          name: i.name,
+          price: i.price,
+          quantity: i.quantity,
+        })),
+        grandTotal
+      );
     }
   }, [cart, grandTotal]);
 
@@ -192,6 +203,18 @@ export default function CheckoutPage() {
           num_items: orderItems.reduce((sum, i) => sum + i.qty, 0),
           value: data.total || grandTotal,
           currency: 'NPR',
+        });
+
+        // Track Google Analytics 4 (GA4) Purchase event with transaction_id deduplication
+        trackGaPurchase({
+          id: data.id,
+          total: data.total || grandTotal,
+          items: orderItems.map((item) => ({
+            productId: item.productId,
+            name: cart.find((c) => c.id === item.productId)?.name || item.productId,
+            price: item.priceAtPurchase,
+            quantity: item.qty,
+          })),
         });
 
         clearCart();

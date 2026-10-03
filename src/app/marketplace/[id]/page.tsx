@@ -8,6 +8,7 @@ import { formatNPR } from '@/lib/utils';
 import { ShoppingBag, Heart, Stethoscope, Store, MapPin, Star, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { trackViewContent } from '@/lib/meta-pixel';
+import { trackGaViewItem } from '@/lib/gtag';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -37,7 +38,7 @@ export default function ProductDetailPage() {
         setProduct(data);
         setLoading(false);
 
-        // Track Meta Pixel ViewContent event (once per productId)
+        // Track Meta Pixel ViewContent & GA4 view_item event (once per productId)
         if (data && data.id && viewContentTracked.current !== data.id) {
           viewContentTracked.current = data.id;
           trackViewContent({
@@ -46,6 +47,13 @@ export default function ProductDetailPage() {
             content_category: data.category?.name || 'Pet Supplies',
             value: data.price,
             currency: 'NPR',
+          });
+
+          trackGaViewItem({
+            id: data.id,
+            name: data.name,
+            price: data.price,
+            category: data.category?.name || 'Pet Supplies',
           });
         }
       })
