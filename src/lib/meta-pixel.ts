@@ -51,7 +51,7 @@ const memoryTrackedPurchases = new Set<string>();
  * Get configured Meta Pixel ID from environment variable
  */
 export function getPixelId(): string {
-  return process.env.NEXT_PUBLIC_META_PIXEL_ID || '';
+  return process.env.NEXT_PUBLIC_META_PIXEL_ID || '1497046215962932';
 }
 
 /**

@@ -39,7 +39,7 @@ const memoryTrackedGaPurchases = new Set<string>();
  * Get configured Google Analytics 4 Measurement ID from environment variable
  */
 export function getGaMeasurementId(): string {
-  return process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '';
+  return process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-42RWPYWGLR';
 }
 
 /**
