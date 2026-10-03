@@ -3,6 +3,7 @@ import PlaceholderImage from '@/components/ui/PlaceholderImage';
 import { formatNPR } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { Stethoscope, ShieldCheck, Truck, CreditCard, ChevronRight, Star, Heart } from 'lucide-react';
+import TrackableProductCard from '@/components/product/TrackableProductCard';
 
 export const revalidate = 0;
 
@@ -164,36 +165,14 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {vetRecommended.map((product) => {
-            const images = JSON.parse(product.images || '[]');
-            return (
-              <div key={product.id} className="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                <div>
-                  <div className="relative aspect-square rounded-xl overflow-hidden mb-3">
-                    <PlaceholderImage src={images[0]} alt={product.name} />
-                    <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                      Vet Approved
-                    </span>
-                  </div>
-                  <div className="text-xs font-semibold text-gray-400 mb-1">{product.category.name}</div>
-                  <h3 className="font-bold text-gray-900 text-sm line-clamp-2 hover:text-emerald-600 transition mb-2">
-                    <Link href={`/marketplace/${product.id}`}>{product.name}</Link>
-                  </h3>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
-                    <span className="font-extrabold text-emerald-700 text-base">{formatNPR(product.price)}</span>
-                    <Link
-                      href={`/marketplace/${product.id}`}
-                      className="px-3 py-1 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition"
-                    >
-                      View Detail
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {vetRecommended.map((product) => (
+            <TrackableProductCard
+              key={product.id}
+              product={product}
+              priorityBadge="Vet Approved"
+              showSeller={false}
+            />
+          ))}
         </div>
       </section>
 
@@ -267,45 +246,9 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => {
-            const images = JSON.parse(product.images || '[]');
-            return (
-              <div key={product.id} className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:shadow-lg transition flex flex-col justify-between group">
-                <div>
-                  <div className="relative aspect-square rounded-xl overflow-hidden mb-3 bg-gray-100">
-                    <PlaceholderImage src={images[0]} alt={product.name} />
-                    {product.vetRecommended && (
-                      <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        Vet Recommended
-                      </span>
-                    )}
-                    {product.stock <= product.lowStockThreshold && product.stock > 0 && (
-                      <span className="absolute top-2 right-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        Only {product.stock} left!
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex justify-between items-center text-xs text-gray-500 mb-1">
-                    <span>{product.category.name}</span>
-                    <span className="text-emerald-700 font-medium">{product.seller.shopName}</span>
-                  </div>
-                  <h3 className="font-bold text-gray-900 text-sm line-clamp-2 group-hover:text-emerald-600 transition mb-2">
-                    <Link href={`/marketplace/${product.id}`}>{product.name}</Link>
-                  </h3>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-                  <span className="font-extrabold text-gray-900 text-lg">{formatNPR(product.price)}</span>
-                  <Link
-                    href={`/marketplace/${product.id}`}
-                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition"
-                  >
-                    View
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
+          {featuredProducts.map((product) => (
+            <TrackableProductCard key={product.id} product={product} />
+          ))}
         </div>
       </section>
     </div>

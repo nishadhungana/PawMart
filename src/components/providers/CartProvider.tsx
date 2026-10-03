@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { trackAddToCart } from '@/lib/meta-pixel';
 
 export interface CartItemType {
   id: string; // product id
@@ -53,6 +54,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [cart, wishlist, isLoaded]);
 
   const addToCart = (item: Omit<CartItemType, 'quantity'>, qty = 1) => {
+    if (item.stock <= 0 || qty <= 0) return;
+
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
@@ -61,6 +64,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         );
       }
       return [...prev, { ...item, quantity: qty }];
+    });
+
+    // Track Meta Pixel AddToCart event
+    trackAddToCart({
+      content_ids: [item.id],
+      content_name: item.name,
+      value: item.price * qty,
+      currency: 'NPR',
+      num_items: qty,
     });
   };
 

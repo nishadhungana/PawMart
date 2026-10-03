@@ -6,11 +6,22 @@ import Link from 'next/link';
 import PlaceholderImage from '@/components/ui/PlaceholderImage';
 import { formatNPR } from '@/lib/utils';
 import { Trash2, ShoppingBag, Heart } from 'lucide-react';
+import { trackCustomEvent } from '@/lib/meta-pixel';
 
 export default function WishlistPage() {
   const { wishlist, toggleWishlist, addToCart } = useCart();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleProductClick = (product: any) => {
+    trackCustomEvent('ProductClick', {
+      content_ids: [product.id],
+      content_name: product.name,
+      category: product.category?.name || 'Pet Supplies',
+      value: product.price,
+      currency: 'NPR',
+    });
+  };
 
   useEffect(() => {
     if (wishlist.length === 0) {
@@ -66,7 +77,9 @@ export default function WishlistPage() {
             <div key={product.id} className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm space-y-3 flex flex-col justify-between">
               <div>
                 <div className="relative aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                  <PlaceholderImage src={images[0]} alt={product.name} />
+                  <Link href={`/marketplace/${product.id}`} onClick={() => handleProductClick(product)} className="block w-full h-full">
+                    <PlaceholderImage src={images[0]} alt={product.name} />
+                  </Link>
                   <button
                     onClick={() => toggleWishlist(product.id)}
                     className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur text-rose-600 rounded-full hover:bg-white transition"
@@ -76,7 +89,11 @@ export default function WishlistPage() {
                   </button>
                 </div>
                 <div className="text-xs font-semibold text-emerald-700">{product.category.name}</div>
-                <h3 className="font-bold text-gray-900 text-sm line-clamp-2">{product.name}</h3>
+                <h3 className="font-bold text-gray-900 text-sm line-clamp-2 hover:text-emerald-600 transition">
+                  <Link href={`/marketplace/${product.id}`} onClick={() => handleProductClick(product)}>
+                    {product.name}
+                  </Link>
+                </h3>
               </div>
 
               <div className="pt-2 border-t border-gray-100 flex items-center justify-between">

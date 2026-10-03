@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useCart } from '@/components/providers/CartProvider';
 import PlaceholderImage from '@/components/ui/PlaceholderImage';
 import { formatNPR } from '@/lib/utils';
 import { ShoppingBag, Heart, Stethoscope, Store, MapPin, Star, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { trackViewContent } from '@/lib/meta-pixel';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -18,6 +19,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [addedMessage, setAddedMessage] = useState(false);
+  const viewContentTracked = useRef<string | null>(null);
 
   // Review Form state
   const [rating, setRating] = useState(5);
@@ -34,6 +36,18 @@ export default function ProductDetailPage() {
       .then((data) => {
         setProduct(data);
         setLoading(false);
+
+        // Track Meta Pixel ViewContent event (once per productId)
+        if (data && data.id && viewContentTracked.current !== data.id) {
+          viewContentTracked.current = data.id;
+          trackViewContent({
+            content_ids: [data.id],
+            content_name: data.name,
+            content_category: data.category?.name || 'Pet Supplies',
+            value: data.price,
+            currency: 'NPR',
+          });
+        }
       })
       .catch((err) => {
         console.error(err);

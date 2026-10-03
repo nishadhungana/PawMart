@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/components/providers/CartProvider';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { formatNPR } from '@/lib/utils';
 import { ShieldCheck, CheckCircle, CreditCard, MapPin, Truck, AlertCircle, Lock } from 'lucide-react';
+import { trackInitiateCheckout, trackPurchase } from '@/lib/meta-pixel';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -32,6 +33,20 @@ export default function CheckoutPage() {
 
   const deliveryFee = 100;
   const grandTotal = cartTotal + deliveryFee;
+  const initiateCheckoutTracked = useRef(false);
+
+  // Track Meta Pixel InitiateCheckout event once per checkout session
+  useEffect(() => {
+    if (cart.length > 0 && !initiateCheckoutTracked.current) {
+      initiateCheckoutTracked.current = true;
+      trackInitiateCheckout({
+        content_ids: cart.map((i) => i.id),
+        num_items: cart.reduce((sum, i) => sum + i.quantity, 0),
+        value: grandTotal,
+        currency: 'NPR',
+      });
+    }
+  }, [cart, grandTotal]);
 
   if (cart.length === 0) {
     return (
@@ -170,6 +185,15 @@ export default function CheckoutPage() {
         setShowPaymentModal(false);
         setShowCardModal(false);
       } else {
+        // Track Meta Pixel Purchase event with order ID deduplication
+        trackPurchase({
+          order_id: data.id,
+          content_ids: orderItems.map((i) => i.productId),
+          num_items: orderItems.reduce((sum, i) => sum + i.qty, 0),
+          value: data.total || grandTotal,
+          currency: 'NPR',
+        });
+
         clearCart();
         router.push('/customer/dashboard?orderSuccess=true');
       }

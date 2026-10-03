@@ -6,6 +6,7 @@ import { CartProvider } from '@/components/providers/CartProvider';
 import { NotificationProvider } from '@/components/providers/NotificationProvider';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import MetaPixel from '@/components/analytics/MetaPixel';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <MetaPixel />
         <AuthProvider>
           <CartProvider>
             <NotificationProvider>

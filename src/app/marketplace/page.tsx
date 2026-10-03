@@ -1,8 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import PlaceholderImage from '@/components/ui/PlaceholderImage';
-import { formatNPR } from '@/lib/utils';
 import { Search, Filter, Stethoscope, Check } from 'lucide-react';
+import TrackableProductCard from '@/components/product/TrackableProductCard';
 
 export const revalidate = 0;
 
@@ -153,69 +152,9 @@ export default async function MarketplacePage({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => {
-            const images = JSON.parse(product.images || '[]');
-            const ratingSum = product.reviews.reduce((acc, r) => acc + r.rating, 0);
-            const avgRating = product.reviews.length ? (ratingSum / product.reviews.length).toFixed(1) : null;
-
-            return (
-              <div
-                key={product.id}
-                className="bg-white rounded-2xl border border-gray-200 p-4 shadow-sm hover:shadow-lg transition flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="relative aspect-square rounded-xl overflow-hidden mb-3 bg-gray-50">
-                    <PlaceholderImage src={images[0]} alt={product.name} />
-                    {product.vetRecommended && (
-                      <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        Vet Approved
-                      </span>
-                    )}
-                    {product.stock <= product.lowStockThreshold && product.stock > 0 && (
-                      <span className="absolute top-2 right-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        Low Stock ({product.stock})
-                      </span>
-                    )}
-                    {product.stock === 0 && (
-                      <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        Out of Stock
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                    <span className="font-medium text-emerald-700">{product.category.name}</span>
-                    <span className="text-gray-400">{product.seller.shopName}</span>
-                  </div>
-
-                  <h2 className="font-bold text-gray-900 text-sm line-clamp-2 group-hover:text-emerald-600 transition mb-2">
-                    <Link href={`/marketplace/${product.id}`}>{product.name}</Link>
-                  </h2>
-
-                  {avgRating && (
-                    <div className="flex items-center gap-1 text-xs text-amber-600 mb-2">
-                      <span>★</span>
-                      <span className="font-bold">{avgRating}</span>
-                      <span className="text-gray-400">({product.reviews.length})</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-                  <div>
-                    <div className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Price</div>
-                    <div className="font-extrabold text-gray-900 text-lg">{formatNPR(product.price)}</div>
-                  </div>
-                  <Link
-                    href={`/marketplace/${product.id}`}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition shadow-sm"
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
+          {products.map((product) => (
+            <TrackableProductCard key={product.id} product={product} />
+          ))}
         </div>
       )}
     </div>

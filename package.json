@@ -12,6 +12,8 @@
     "db:seed": "prisma db seed",
     "test:emails": "tsx scripts/test-dynamic-emails.ts",
     "test:security": "tsx scripts/test-security.ts",
+    "test:pixel": "tsx scripts/test-meta-pixel.ts",
+    "dev:pixel": "tsx scripts/test-meta-pixel.ts",
     "email:send": "tsx scripts/send-live-test.ts"
   },
   "prisma": {
