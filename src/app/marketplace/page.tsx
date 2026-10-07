@@ -186,7 +186,7 @@ export default async function MarketplacePage({
       {products.length === 0 ? (
         <div className="bg-white p-12 rounded-3xl border border-gray-200 text-center space-y-4 max-w-md mx-auto my-12">
           <div className="text-5xl">🔍</div>
-          <h3 className="text-lg font-bold text-gray-900">No products found</h3>
+          <h2 className="text-lg font-bold text-gray-900">No products found</h2>
           <p className="text-xs text-gray-500">
             We couldn&apos;t find any pet products matching your selected search query or filters.
           </p>
@@ -198,11 +198,14 @@ export default async function MarketplacePage({
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <TrackableProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <section aria-label="Available Pet Products">
+          <h2 className="sr-only">Available Pet Products</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <TrackableProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );

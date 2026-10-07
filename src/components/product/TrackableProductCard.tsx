@@ -150,11 +150,11 @@ export default function TrackableProductCard({
         </div>
 
         {/* Title */}
-        <h2 className="font-bold text-gray-900 text-sm line-clamp-2 group-hover:text-emerald-600 transition mb-2">
+        <h3 className="font-bold text-gray-900 text-sm line-clamp-2 group-hover:text-emerald-600 transition mb-2">
           <Link href={`/marketplace/${product.id}`} onClick={handleProductClick}>
             {product.name}
           </Link>
-        </h2>
+        </h3>
 
         {/* Ratings */}
         {avgRating && (

@@ -151,12 +151,14 @@ function VetDirectoryContent() {
       ) : vets.length === 0 ? (
         <div className="bg-white p-12 rounded-3xl text-center space-y-3 border border-gray-200">
           <div className="text-4xl">🏥</div>
-          <h3 className="text-lg font-bold text-gray-900">No veterinary clinics found</h3>
+          <h2 className="text-lg font-bold text-gray-900">No veterinary clinics found</h2>
           <p className="text-xs text-gray-500">Try adjusting your city filter or search terms.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {vets.map((vet) => {
+        <section aria-label="Veterinary Clinics Directory">
+          <h2 className="sr-only">Veterinary Clinics Directory</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {vets.map((vet) => {
             const services = JSON.parse(vet.servicesOffered || '[]');
             return (
               <div
@@ -214,7 +216,8 @@ function VetDirectoryContent() {
               </div>
             );
           })}
-        </div>
+          </div>
+        </section>
       )}
 
       {/* Appointment Booking Modal */}

@@ -263,7 +263,7 @@ export default function ProductDetailPage() {
 
           {/* Description */}
           <div className="border-t border-gray-200 pt-6 space-y-2">
-            <h3 className="font-bold text-gray-900 text-sm">Product Description</h3>
+            <h2 className="font-bold text-gray-900 text-sm">Product Description</h2>
             <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{product.description}</p>
           </div>
         </div>

@@ -79,13 +79,14 @@ export default async function HomePage() {
 
       {/* Feature Highlights */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="sr-only">Why Choose PawMart Nepal - Delivery & Verification Guarantees</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-4">
             <div className="p-3 bg-emerald-100 text-emerald-700 rounded-xl">
               <Truck className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 text-sm">Fast Nepal Delivery</h4>
+              <h3 className="font-bold text-gray-900 text-sm">Fast Nepal Delivery</h3>
               <p className="text-xs text-gray-500 mt-0.5">Same-day inside Kathmandu Valley, 2-3 days nationwide.</p>
             </div>
           </div>
@@ -94,7 +95,7 @@ export default async function HomePage() {
               <Stethoscope className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 text-sm">Verified Vet Doctors</h4>
+              <h3 className="font-bold text-gray-900 text-sm">Verified Vet Doctors</h3>
               <p className="text-xs text-gray-500 mt-0.5">Book clinic visits or home consultations seamlessly.</p>
             </div>
           </div>
@@ -103,7 +104,7 @@ export default async function HomePage() {
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 text-sm">100% Genuine Supplies</h4>
+              <h3 className="font-bold text-gray-900 text-sm">100% Genuine Supplies</h3>
               <p className="text-xs text-gray-500 mt-0.5">Directly from verified local pet shop sellers.</p>
             </div>
           </div>
@@ -112,7 +113,7 @@ export default async function HomePage() {
               <CreditCard className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-bold text-gray-900 text-sm">eSewa / Khalti / COD</h4>
+              <h3 className="font-bold text-gray-900 text-sm">eSewa / Khalti / COD</h3>
               <p className="text-xs text-gray-500 mt-0.5">Instant Digital Payment or Cash on Delivery.</p>
             </div>
           </div>

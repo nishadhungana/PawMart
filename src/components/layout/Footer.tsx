@@ -21,7 +21,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">Marketplace</h4>
+            <p className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">Marketplace</p>
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link href="/marketplace?category=dog-food" className="hover:text-emerald-400 transition">Dog Food & Snacks</Link></li>
               <li><Link href="/marketplace?category=cat-food" className="hover:text-emerald-400 transition">Cat Treats & Litter</Link></li>
@@ -33,7 +33,7 @@ export default function Footer() {
 
           {/* Vet Services */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">Vet Care Platform</h4>
+            <p className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">Vet Care Platform</p>
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link href="/vets" className="hover:text-emerald-400 transition">Find Nearby Vet Clinics</Link></li>
               <li><Link href="/vets?type=HOME_VISIT" className="hover:text-emerald-400 transition">Request Vet Home Visit</Link></li>
@@ -44,7 +44,7 @@ export default function Footer() {
 
           {/* Contact & Support */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">Support & Helpline</h4>
+            <p className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">Support & Helpline</p>
             <div className="space-y-3 text-sm text-gray-400">
               <p>📞 Helpline: <span className="text-white font-medium">+977-9801234567</span></p>
               <p>✉️ Support: <span className="text-white font-medium">support@pawmart.com.np</span></p>
