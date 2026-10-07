@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { formatNPR, formatDate } from '@/lib/utils';
 import { ShoppingBag, Calendar, Heart, User, MapPin, Printer, Star, Plus, CheckCircle, Clock, KeyRound, Lock, AlertCircle, ShieldCheck } from 'lucide-react';
+import RecommendedProducts from '@/components/recommendations/RecommendedProducts';
 
 function CustomerDashboardContent() {
   const { data: session, status } = useSession();
@@ -614,6 +615,13 @@ function CustomerDashboardContent() {
           </div>
         </div>
       )}
+
+      {/* Personalized Collaborative Filtering Recommendations */}
+      <RecommendedProducts
+        className="mt-12 pt-8 border-t border-gray-200"
+        title="Personalized Recommendations for Your Pets"
+        subtitle="Based on your past orders and purchases from pet parents with similar preferences in Nepal"
+      />
     </div>
   );
 }

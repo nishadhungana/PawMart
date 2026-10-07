@@ -4,6 +4,7 @@ import { formatNPR } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { Stethoscope, ShieldCheck, Truck, CreditCard, ChevronRight, Star, Heart } from 'lucide-react';
 import TrackableProductCard from '@/components/product/TrackableProductCard';
+import RecommendedProducts from '@/components/recommendations/RecommendedProducts';
 
 export const revalidate = 0;
 
@@ -232,6 +233,9 @@ export default async function HomePage() {
           })}
         </div>
       </section>
+
+      {/* Collaborative Filtering Recommendations (or Popular Fallback) */}
+      <RecommendedProducts />
 
       {/* Featured Marketplace Catalog */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">

@@ -14,6 +14,7 @@
     "test:security": "tsx scripts/test-security.ts",
     "test:pixel": "tsx scripts/test-meta-pixel.ts",
     "test:ga4": "tsx scripts/test-ga4.ts",
+    "test:recommendations": "tsx scripts/test-recommendations.ts",
     "dev:pixel": "tsx scripts/test-meta-pixel.ts",
     "email:send": "tsx scripts/send-live-test.ts"
   },

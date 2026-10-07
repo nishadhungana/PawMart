@@ -517,6 +517,40 @@ async function main() {
     },
   });
 
+  // Sample Order for Customer 2 (Enables Collaborative Filtering overlap)
+  await prisma.order.create({
+    data: {
+      customerId: customer2.id,
+      total: 7300,
+      status: 'DELIVERED',
+      paymentMethod: 'ESEWA',
+      paymentStatus: 'PAID',
+      shippingAddress: 'Jhamsikhel, Ward 3, Lalitpur (+977-9818987654)',
+      items: {
+        create: [
+          {
+            productId: createdProducts[0].id, // Royal Canin (shared with customer1)
+            sellerId: sellerUser1.sellerProfile!.id,
+            qty: 1,
+            priceAtPurchase: 4800,
+          },
+          {
+            productId: createdProducts[1].id, // Himalaya Erina Shampoo (shared with customer1)
+            sellerId: sellerUser1.sellerProfile!.id,
+            qty: 1,
+            priceAtPurchase: 650,
+          },
+          {
+            productId: createdProducts[2].id, // KONG Chew Toy (candidate recommendation for customer1)
+            sellerId: sellerUser1.sellerProfile!.id,
+            qty: 1,
+            priceAtPurchase: 1850,
+          },
+        ],
+      },
+    },
+  });
+
   console.log('Orders created successfully.');
 
   // 5. Product Reviews
