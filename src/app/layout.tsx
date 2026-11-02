@@ -20,22 +20,34 @@ export const metadata: Metadata = {
     template: '%s | PawMart Nepal',
   },
   description:
-    'Shop authentic pet food, toys, accessories & book verified veterinary clinic visits or home consultations across Kathmandu, Lalitpur, Pokhara and all Nepal.',
+    'Buy authentic pet supplies, food and toys in Nepal. Book verified vet clinic visits or home consultations in Kathmandu, Pokhara and nationwide.',
   keywords: [
     'pet shop Nepal',
-    'pet products Nepal',
-    'pet supplies Nepal',
-    'dog food Nepal',
-    'cat food Nepal',
-    'pet accessories Nepal',
-    'veterinary services Nepal',
+    'dog food Kathmandu',
+    'cat supplies Pokhara',
     'online pet store Nepal',
-    'pet supplies Kathmandu',
+    'veterinary clinic booking',
+    'pet grooming supplies',
+    'animal hospital consultation',
     'PawMart Nepal',
   ],
   authors: [{ name: 'PawMart Nepal' }],
   creator: 'PawMart Nepal',
   publisher: 'PawMart Nepal',
+  alternates: {
+    canonical: siteUrl,
+    languages: {
+      'en-US': siteUrl,
+      'ne-NP': siteUrl,
+    },
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -57,7 +69,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'PawMart Nepal | Pet Supplies & Veterinary Care in Nepal',
     description:
-      'Shop authentic pet food, toys, accessories & book verified veterinary clinic appointments across Nepal.',
+      'Buy authentic pet food, accessories & book verified veterinary clinic appointments across Nepal.',
     images: ['/hero.jpeg'],
   },
   robots: {
@@ -73,6 +85,54 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      url: siteUrl,
+      name: 'PawMart Nepal',
+      description: "Nepal's Premier Pet Marketplace and Veterinary Care Platform",
+      inLanguage: ['en-US', 'ne-NP'],
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${siteUrl}/marketplace?search={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#organization`,
+      name: 'PawMart Nepal',
+      url: siteUrl,
+      logo: `${siteUrl}/hero.jpeg`,
+      contactPoint: {
+        '@type': 'ContactPoint',
+        telephone: '+977-9801234567',
+        contactType: 'customer service',
+        areaServed: 'NP',
+        availableLanguage: ['English', 'Nepali'],
+      },
+    },
+    {
+      '@type': 'Store',
+      '@id': `${siteUrl}/#store`,
+      name: 'PawMart Nepal Pet Store',
+      url: siteUrl,
+      priceRange: 'NPR',
+      currenciesAccepted: 'NPR',
+      paymentAccepted: 'Cash on Delivery, eSewa, Khalti',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Kathmandu',
+        addressRegion: 'Bagmati',
+        addressCountry: 'NP',
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -80,6 +140,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className={inter.className}>
         <MetaPixel />
         <GoogleAnalytics />
