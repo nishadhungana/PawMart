@@ -11,7 +11,7 @@ import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 
 const inter = Inter({ subsets: ['latin'] });
 
-const siteUrl = process.env.NEXTAUTH_URL || 'https://pawmart-ai2scl8of-nishas-projects-1ac804f9.vercel.app';
+const siteUrl = process.env.NEXTAUTH_URL || 'https://pawmart-nishas-projects-1ac804f9.vercel.app';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

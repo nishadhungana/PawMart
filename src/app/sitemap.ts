@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXTAUTH_URL || 'https://pawmart-ai2scl8of-nishas-projects-1ac804f9.vercel.app';
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://pawmart-nishas-projects-1ac804f9.vercel.app';
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {

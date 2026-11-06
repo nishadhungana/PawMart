@@ -126,13 +126,15 @@ export async function POST(req: Request) {
         merchandiseTotal += product.price * item.qty;
       }
 
-      // Deduct stock
-      for (const item of validatedData.items) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: { stock: { decrement: item.qty } },
-        });
-      }
+      // Deduct stock concurrently
+      await Promise.all(
+        validatedData.items.map((item) =>
+          tx.product.update({
+            where: { id: item.productId },
+            data: { stock: { decrement: item.qty } },
+          })
+        )
+      );
 
       // Create Order
       const newOrder = await tx.order.create({
@@ -190,6 +192,9 @@ export async function POST(req: Request) {
       });
 
       return securedOrder;
+    }, {
+      maxWait: 15000,
+      timeout: 30000,
     });
 
     // Fire dynamic order confirmation email asynchronously after successful order creation
