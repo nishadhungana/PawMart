@@ -55,6 +55,22 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // If relative URL, stay on current domain
+      if (url.startsWith('/')) {
+        return url;
+      }
+      try {
+        const parsed = new URL(url);
+        // If redirecting to any vercel.app or localhost domain, allow it
+        if (parsed.host.includes('vercel.app') || parsed.host.includes('localhost')) {
+          return url;
+        }
+      } catch {
+        // Fallback
+      }
+      return baseUrl;
+    },
   },
   pages: {
     signIn: '/login',

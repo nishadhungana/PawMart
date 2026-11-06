@@ -30,6 +30,12 @@ export default function Navbar() {
     }
   };
 
+  const handleSignOut = async () => {
+    setMobileMenuOpen(false);
+    await signOut({ redirect: false });
+    window.location.href = '/';
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       {/* Top Bar with Demo Role Switcher Bar */}
@@ -244,7 +250,7 @@ export default function Navbar() {
                   </span>
                 </Link>
                 <button
-                  onClick={() => signOut({ callbackUrl: '/' })}
+                  onClick={handleSignOut}
                   className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                   title="Sign out"
                 >
@@ -324,10 +330,7 @@ export default function Navbar() {
                 Go to {role} Dashboard ({session.user.name})
               </Link>
               <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  signOut({ callbackUrl: '/' });
-                }}
+                onClick={handleSignOut}
                 className="w-full text-left py-2 text-red-600 font-medium"
               >
                 Sign out
