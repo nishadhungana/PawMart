@@ -94,8 +94,9 @@ function LoginForm() {
       } else {
         window.location.href = targetUrl;
       }
-    } catch (err) {
-      setError('An error occurred during sign in');
+    } catch (err: any) {
+      console.error('Sign-in error:', err);
+      setError(err?.message || 'An error occurred during sign in');
       setLoading(false);
     }
   };

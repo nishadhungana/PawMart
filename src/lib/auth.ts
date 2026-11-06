@@ -56,20 +56,24 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // If relative URL, stay on current domain
+      const base =
+        process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : process.env.NEXTAUTH_URL || baseUrl;
+
+      // Ensure relative paths are properly resolved to full absolute URLs
       if (url.startsWith('/')) {
-        return url;
+        return `${base.replace(/\/$/, '')}${url}`;
       }
       try {
         const parsed = new URL(url);
-        // If redirecting to any vercel.app or localhost domain, allow it
-        if (parsed.host.includes('vercel.app') || parsed.host.includes('localhost')) {
+        if (parsed.host.endsWith('vercel.app') || parsed.host.includes('localhost')) {
           return url;
         }
       } catch {
         // Fallback
       }
-      return baseUrl;
+      return base;
     },
   },
   pages: {
